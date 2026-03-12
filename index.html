@@ -11,7 +11,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="UBA BVN">
 <meta name="theme-color" content="#E60000">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <style>
@@ -1199,6 +1200,66 @@
     text-transform: uppercase;
   }
 
+  /* ===== TOKEN NUMPAD ===== */
+  .token-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .token-dot.filled {
+    background: var(--red);
+    border-color: var(--red);
+    box-shadow: 0 0 10px rgba(230,0,0,0.5);
+    transform: scale(1.1);
+  }
+  .token-dot.shake {
+    animation: dotShake 0.4s ease;
+  }
+  @keyframes dotShake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .token-dot.success {
+    background: var(--success);
+    border-color: var(--success);
+    box-shadow: 0 0 10px rgba(0,168,84,0.5);
+    transform: scale(1.15);
+  }
+  .numpad-btn {
+    height: 72px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .numpad-btn:active {
+    background: rgba(230,0,0,0.3);
+    border-color: rgba(230,0,0,0.5);
+    transform: scale(0.95);
+  }
+  .numpad-ghost {
+    font-size: 14px;
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.5);
+  }
+
   /* Responsive */
   @media (min-width: 480px) {
     #app { border-radius: 0; box-shadow: none; }
@@ -1283,6 +1344,108 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: SECURE PASS TOKEN
+  ============================================================ -->
+  <div id="screen-token" class="screen">
+    <div class="screen-content no-nav" style="display:flex;flex-direction:column;min-height:100vh;background:#0F0F0F;">
+
+      <!-- Top bar -->
+      <div style="padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;">
+        <button onclick="showScreen('login')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,0.6);">
+          <span class="material-icons-round" style="font-size:18px;">arrow_back</span>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;background:rgba(230,0,0,0.15);border:1px solid rgba(230,0,0,0.3);padding:5px 12px;border-radius:100px;">
+          <span class="material-icons-round" style="font-size:13px;color:var(--red);">shield</span>
+          <span style="font-size:12px;font-weight:600;color:var(--red);">Step 2 of 2</span>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div style="padding:32px 24px 0;text-align:center;">
+        <div style="width:72px;height:72px;background:linear-gradient(135deg,#2D0000,#E60000);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 28px rgba(230,0,0,0.35);">
+          <span class="material-icons-round" style="font-size:34px;color:#fff;">key</span>
+        </div>
+        <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;">Enter Secure Pass Token</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:8px;line-height:1.6;max-width:280px;margin-left:auto;margin-right:auto;">
+          Enter your personal 6-digit secure token to complete authentication
+        </div>
+        <!-- Agent identity pill -->
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:6px 14px;margin-top:16px;">
+          <span class="material-icons-round" style="font-size:14px;color:rgba(255,255,255,0.5);">badge</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);font-family:var(--mono);" id="token-agent-id">UBA-2026-08847</span>
+        </div>
+      </div>
+
+      <!-- PIN Dots display -->
+      <div style="padding:36px 24px 0;display:flex;justify-content:center;gap:16px;" id="token-dots">
+        <div class="token-dot" id="td-0"></div>
+        <div class="token-dot" id="td-1"></div>
+        <div class="token-dot" id="td-2"></div>
+        <div class="token-dot" id="td-3"></div>
+        <div class="token-dot" id="td-4"></div>
+        <div class="token-dot" id="td-5"></div>
+      </div>
+
+      <!-- Error msg -->
+      <div id="token-error" style="display:none;text-align:center;margin-top:14px;">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(230,0,0,0.15);border:1px solid rgba(230,0,0,0.3);padding:6px 14px;border-radius:100px;">
+          <span class="material-icons-round" style="font-size:14px;color:var(--red);">error_outline</span>
+          <span style="font-size:12px;font-weight:600;color:var(--red);" id="token-error-msg">Invalid token. Try again.</span>
+        </div>
+      </div>
+
+      <!-- Attempts indicator -->
+      <div style="text-align:center;margin-top:10px;">
+        <span style="font-size:11px;color:rgba(255,255,255,0.25);font-weight:500;" id="token-attempts-label"></span>
+      </div>
+
+      <!-- Spacer -->
+      <div style="flex:1;"></div>
+
+      <!-- Numpad -->
+      <div style="padding:0 24px 40px;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:340px;margin:0 auto;">
+          <!-- 1–9 -->
+          <button class="numpad-btn" onclick="tokenInput('1')">1</button>
+          <button class="numpad-btn" onclick="tokenInput('2')">2</button>
+          <button class="numpad-btn" onclick="tokenInput('3')">3</button>
+          <button class="numpad-btn" onclick="tokenInput('4')">4</button>
+          <button class="numpad-btn" onclick="tokenInput('5')">5</button>
+          <button class="numpad-btn" onclick="tokenInput('6')">6</button>
+          <button class="numpad-btn" onclick="tokenInput('7')">7</button>
+          <button class="numpad-btn" onclick="tokenInput('8')">8</button>
+          <button class="numpad-btn" onclick="tokenInput('9')">9</button>
+          <!-- Bottom row -->
+          <button class="numpad-btn numpad-ghost" onclick="tokenClear()">
+            <span class="material-icons-round" style="font-size:18px;">refresh</span>
+            <span style="font-size:10px;display:block;margin-top:2px;">Clear</span>
+          </button>
+          <button class="numpad-btn" onclick="tokenInput('0')">0</button>
+          <button class="numpad-btn numpad-ghost" onclick="tokenDelete()">
+            <span class="material-icons-round" style="font-size:20px;">backspace</span>
+          </button>
+        </div>
+
+        <!-- Demo hint -->
+        <div style="margin-top:16px;text-align:center;">
+          <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.12);border-radius:10px;padding:8px 16px;">
+            <span class="material-icons-round" style="font-size:14px;color:rgba(255,255,255,0.3);">info</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.35);">Demo token: </span>
+            <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:rgba(230,0,0,0.7);letter-spacing:2px;">112233</span>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:14px;">
+          <button onclick="tokenForgot()" style="background:none;border:none;font-family:var(--font);font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;text-decoration:underline;text-underline-offset:3px;">
+            Forgot secure token?
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2543,12 +2706,118 @@ function navTo(dest) {
 // LOGIN
 // ===========================
 function doLogin() {
+  const staffId = document.getElementById('login-staffid').value.trim();
   showLoading('Authenticating...', 'Verifying agent credentials');
   setTimeout(() => {
     hideLoading();
-    buildRecentActivity();
-    showScreen('dashboard');
+    // Update agent ID display on token screen
+    document.getElementById('token-agent-id').textContent = staffId || 'UBA-2026-08847';
+    tokenReset();
+    showScreen('token');
   }, 1800);
+}
+
+// ===========================
+// SECURE PASS TOKEN
+// ===========================
+let tokenValue = '';
+const CORRECT_TOKEN = '112233'; // demo token
+let tokenAttempts = 0;
+const MAX_ATTEMPTS = 3;
+
+function tokenInput(digit) {
+  if (tokenValue.length >= 6) return;
+  tokenValue += digit;
+  updateTokenDots();
+  if (tokenValue.length === 6) {
+    setTimeout(validateToken, 300);
+  }
+}
+
+function tokenDelete() {
+  if (!tokenValue.length) return;
+  tokenValue = tokenValue.slice(0, -1);
+  updateTokenDots();
+  hideTokenError();
+}
+
+function tokenClear() {
+  tokenReset();
+}
+
+function updateTokenDots() {
+  for (let i = 0; i < 6; i++) {
+    const dot = document.getElementById(`td-${i}`);
+    dot.classList.toggle('filled', i < tokenValue.length);
+  }
+}
+
+function validateToken() {
+  if (tokenValue === CORRECT_TOKEN) {
+    // Success — flash green then proceed
+    for (let i = 0; i < 6; i++) {
+      const dot = document.getElementById(`td-${i}`);
+      dot.classList.remove('filled');
+      dot.classList.add('success');
+    }
+    setTimeout(() => {
+      tokenReset();
+      buildRecentActivity();
+      showScreen('dashboard');
+    }, 700);
+  } else {
+    // Wrong token
+    tokenAttempts++;
+    const remaining = MAX_ATTEMPTS - tokenAttempts;
+    // Shake dots
+    for (let i = 0; i < 6; i++) {
+      const dot = document.getElementById(`td-${i}`);
+      dot.classList.add('shake');
+      setTimeout(() => dot.classList.remove('shake'), 400);
+    }
+    if (remaining <= 0) {
+      showTokenError('Too many attempts. Please log in again.');
+      setTimeout(() => {
+        tokenReset();
+        showScreen('login');
+      }, 2000);
+    } else {
+      showTokenError(`Invalid token. ${remaining} attempt${remaining > 1 ? 's' : ''} remaining.`);
+      document.getElementById('token-attempts-label').textContent =
+        `${tokenAttempts} of ${MAX_ATTEMPTS} attempts used`;
+    }
+    // Clear entry after short delay
+    setTimeout(() => {
+      tokenValue = '';
+      updateTokenDots();
+    }, 600);
+  }
+}
+
+function showTokenError(msg) {
+  document.getElementById('token-error-msg').textContent = msg;
+  document.getElementById('token-error').style.display = 'block';
+}
+
+function hideTokenError() {
+  document.getElementById('token-error').style.display = 'none';
+}
+
+function tokenReset() {
+  tokenValue = '';
+  tokenAttempts = 0;
+  updateTokenDots();
+  hideTokenError();
+  // Reset success dots
+  for (let i = 0; i < 6; i++) {
+    const dot = document.getElementById(`td-${i}`);
+    dot.classList.remove('filled', 'success', 'shake');
+  }
+  document.getElementById('token-attempts-label').textContent = '';
+}
+
+function tokenForgot() {
+  alert('Please contact your branch IT administrator or call UBA IT Support: 0800-UBA-HELP to reset your secure token.');
 }
 
 function doLogout() {
@@ -3031,13 +3300,6 @@ function showToast(msg) {
 document.addEventListener('DOMContentLoaded', () => {
   showScreen('login');
 });
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(reg => console.log('[SW] Registered:', reg.scope))
-        .catch(err => console.error('[SW] Registration failed:', err));
-    });
-  }
 </script>
 </body>
 </html>
