@@ -1,0 +1,3028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>UBA Field BVN Enrollment System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+  :root {
+    --red: #E60000;
+    --red-dark: #C20000;
+    --red-light: #FFF0F0;
+    --red-mid: #FFE0E0;
+    --white: #FFFFFF;
+    --dark: #1A1A1A;
+    --grey-dark: #333333;
+    --grey-mid: #666666;
+    --grey-light: #999999;
+    --grey-bg: #F5F5F5;
+    --grey-border: #E8E8E8;
+    --grey-card: #FAFAFA;
+    --success: #00A854;
+    --success-light: #E6F7EF;
+    --blue: #0052CC;
+    --blue-light: #E8F0FF;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.1), 0 16px 48px rgba(0,0,0,0.08);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --nav-h: 72px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: var(--font);
+    background: var(--grey-bg);
+    color: var(--dark);
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--white);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(0,0,0,0.12);
+  }
+
+  /* Screens */
+  .screen {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--white);
+    animation: fadeIn 0.3s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Scrollable content area */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: calc(var(--nav-h) + 16px);
+    -webkit-overflow-scrolling: touch;
+  }
+  .screen-content.no-nav { padding-bottom: 24px; }
+
+  /* ===== LOGIN SCREEN ===== */
+  #screen-login {
+    background: linear-gradient(160deg, #1A1A1A 0%, #2D0000 60%, #E60000 100%);
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+  .login-wrap { width: 100%; max-width: 400px; }
+  .login-logo-area {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .login-logo {
+    width: 72px;
+    height: 72px;
+    background: var(--red);
+    border-radius: var(--radius-lg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(230,0,0,0.4);
+  }
+  .login-logo svg { width: 44px; height: 44px; }
+  .login-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+  }
+  .login-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 6px;
+  }
+  .agent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,168,84,0.2);
+    border: 1px solid rgba(0,168,84,0.4);
+    border-radius: 100px;
+    padding: 4px 12px;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4ECBA0;
+  }
+  .agent-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #4ECBA0;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+  }
+  .login-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .form-input {
+    width: 100%;
+    height: 52px;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-md);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 15px;
+    padding: 0 16px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .form-input::placeholder { color: rgba(255,255,255,0.3); }
+  .form-input:focus {
+    border-color: var(--red);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 3px rgba(230,0,0,0.2);
+  }
+  .input-icon-wrap { position: relative; }
+  .input-icon-wrap .form-input { padding-left: 44px; }
+  .input-icon-wrap .material-icons-round {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* Standard form inputs (light) */
+  .form-input-light {
+    width: 100%;
+    height: 52px;
+    background: var(--grey-bg);
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-md);
+    color: var(--dark);
+    font-family: var(--font);
+    font-size: 15px;
+    padding: 0 16px;
+    outline: none;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input-light::placeholder { color: var(--grey-light); }
+  .form-input-light:focus {
+    border-color: var(--red);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(230,0,0,0.08);
+  }
+  .form-label-light {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--grey-dark);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .btn-primary {
+    width: 100%;
+    height: 54px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    letter-spacing: -0.2px;
+    box-shadow: 0 4px 16px rgba(230,0,0,0.3);
+  }
+  .btn-primary:active { transform: scale(0.98); background: var(--red-dark); }
+  .btn-primary.mt { margin-top: 8px; }
+
+  .btn-outline {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    color: var(--red);
+    border: 1.5px solid var(--red);
+    border-radius: var(--radius-md);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-outline:active { background: var(--red-light); }
+
+  .btn-ghost {
+    height: 44px;
+    background: transparent;
+    color: var(--grey-mid);
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    transition: all 0.2s;
+  }
+  .btn-ghost:active { background: var(--grey-bg); }
+
+  .btn-sm {
+    height: 38px;
+    padding: 0 16px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-sm:active { background: var(--red-dark); }
+
+  .btn-sm-outline {
+    height: 38px;
+    padding: 0 16px;
+    background: transparent;
+    color: var(--red);
+    border: 1.5px solid var(--red);
+    border-radius: var(--radius-sm);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .login-footer {
+    text-align: center;
+    margin-top: 24px;
+  }
+  .login-footer p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+  }
+  .login-footer .help { color: rgba(255,255,255,0.7); font-weight: 500; }
+  .login-sec {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 10px;
+  }
+  .login-sec .material-icons-round { font-size: 14px; color: rgba(255,255,255,0.3); }
+
+  /* ===== APP HEADER ===== */
+  .app-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--grey-border);
+    padding: 0 20px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-logo {
+    width: 36px; height: 36px;
+    background: var(--red);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header-logo svg { width: 22px; height: 22px; }
+  .header-title { font-size: 15px; font-weight: 700; color: var(--dark); letter-spacing: -0.3px; }
+  .header-subtitle { font-size: 11px; color: var(--grey-light); margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 40px; height: 40px;
+    border: none; background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--grey-mid);
+    transition: all 0.2s;
+  }
+  .icon-btn:active { background: var(--grey-bg); }
+  .notif-dot {
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    position: absolute;
+    top: 6px; right: 6px;
+    border: 2px solid var(--white);
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    height: var(--nav-h);
+    background: var(--white);
+    border-top: 1px solid var(--grey-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    background: transparent;
+    font-family: var(--font);
+    color: var(--grey-light);
+  }
+  .nav-item.active { color: var(--red); }
+  .nav-item .material-icons-round { font-size: 22px; transition: transform 0.2s; }
+  .nav-item.active .material-icons-round { transform: scale(1.1); }
+  .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
+
+  /* ===== DASHBOARD ===== */
+  .dash-hero {
+    background: linear-gradient(135deg, #1A1A1A 0%, #2D0000 100%);
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .dash-hero::after {
+    content: '';
+    position: absolute;
+    right: -20px; bottom: -30px;
+    width: 140px; height: 140px;
+    background: rgba(230,0,0,0.15);
+    border-radius: 50%;
+  }
+  .dash-hero::before {
+    content: '';
+    position: absolute;
+    right: 40px; bottom: 10px;
+    width: 80px; height: 80px;
+    background: rgba(230,0,0,0.1);
+    border-radius: 50%;
+  }
+  .dash-greeting { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 400; }
+  .dash-name { font-size: 22px; font-weight: 700; color: #fff; margin-top: 2px; letter-spacing: -0.4px; }
+  .dash-id {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+  }
+  .dash-stats-row {
+    display: flex; gap: 10px;
+    margin-top: 20px;
+  }
+  .dash-stat {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    padding: 12px;
+  }
+  .dash-stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+  .dash-stat-lbl {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  .section-header {
+    padding: 24px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -0.3px;
+  }
+  .section-link { font-size: 13px; color: var(--red); font-weight: 600; }
+
+  /* Dashboard workflow cards */
+  .workflow-cards { padding: 0 20px; display: flex; flex-direction: column; gap: 14px; }
+  .wf-card {
+    background: var(--white);
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .wf-card:active, .wf-card.selected {
+    border-color: var(--red);
+    background: var(--red-light);
+    transform: scale(0.99);
+  }
+  .wf-card::after {
+    content: '';
+    position: absolute;
+    right: 16px; top: 50%;
+    transform: translateY(-50%);
+    width: 8px; height: 8px;
+    border-top: 2px solid var(--grey-light);
+    border-right: 2px solid var(--grey-light);
+    transform: translateY(-50%) rotate(45deg);
+    transition: all 0.2s;
+  }
+  .wf-card:active::after, .wf-card.selected::after {
+    border-color: var(--red);
+  }
+  .wf-icon {
+    width: 52px; height: 52px;
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .wf-icon.red { background: var(--red-light); color: var(--red); }
+  .wf-icon.blue { background: var(--blue-light); color: var(--blue); }
+  .wf-icon.green { background: var(--success-light); color: var(--success); }
+  .wf-icon.grey { background: var(--grey-bg); color: var(--grey-mid); }
+  .wf-icon .material-icons-round { font-size: 24px; }
+  .wf-info { flex: 1; min-width: 0; }
+  .wf-title { font-size: 15px; font-weight: 700; color: var(--dark); letter-spacing: -0.2px; }
+  .wf-desc { font-size: 13px; color: var(--grey-mid); margin-top: 3px; line-height: 1.4; }
+  .wf-badge {
+    position: absolute;
+    top: 12px; right: 28px;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 100px;
+  }
+
+  .notif-strip {
+    margin: 0 20px 20px;
+    background: #FFF8E1;
+    border: 1px solid #FFD54F;
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .notif-strip .material-icons-round { color: #F59E0B; font-size: 18px; flex-shrink: 0; }
+  .notif-strip p { font-size: 13px; color: #78350F; line-height: 1.4; }
+
+  /* ===== PROGRESS INDICATOR ===== */
+  .step-bar {
+    padding: 16px 20px 4px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .step-dot.done { background: var(--success); color: #fff; }
+  .step-dot.active { background: var(--red); color: #fff; box-shadow: 0 0 0 4px rgba(230,0,0,0.2); }
+  .step-dot.pending { background: var(--grey-border); color: var(--grey-light); }
+  .step-line { flex: 1; height: 2px; background: var(--grey-border); transition: all 0.3s; }
+  .step-line.done { background: var(--success); }
+  .step-label-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 20px 16px;
+  }
+  .step-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--grey-light);
+    text-align: center;
+    flex: 1;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .step-label.active { color: var(--red); }
+  .step-label.done { color: var(--success); }
+
+  /* ===== SCREEN HEADER ===== */
+  .screen-header {
+    padding: 20px 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .back-btn {
+    width: 40px; height: 40px;
+    border: 1px solid var(--grey-border);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    background: var(--white);
+    color: var(--dark);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .back-btn:active { background: var(--grey-bg); }
+  .screen-header-info { flex: 1; }
+  .screen-header-title { font-size: 18px; font-weight: 700; color: var(--dark); letter-spacing: -0.4px; }
+  .screen-header-sub { font-size: 13px; color: var(--grey-mid); margin-top: 2px; }
+
+  /* ===== FORM SECTIONS ===== */
+  .form-section { padding: 20px 20px 0; }
+  .form-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--grey-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--grey-border);
+  }
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+  .form-group { margin-bottom: 16px; }
+  .form-select {
+    width: 100%;
+    height: 52px;
+    background: var(--grey-bg);
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-md);
+    color: var(--dark);
+    font-family: var(--font);
+    font-size: 15px;
+    padding: 0 16px;
+    outline: none;
+    -webkit-appearance: none;
+    transition: all 0.2s;
+  }
+  .form-select:focus {
+    border-color: var(--red);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(230,0,0,0.08);
+  }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: 'expand_more';
+    font-family: 'Material Icons Round';
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--grey-mid);
+    pointer-events: none;
+  }
+
+  .form-footer { padding: 20px; }
+
+  /* ===== CAMERA SCREEN ===== */
+  .camera-frame {
+    margin: 20px;
+    background: #0A0A0A;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .camera-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .face-guide {
+    width: 180px; height: 220px;
+    border: 3px solid rgba(255,255,255,0.6);
+    border-radius: 50%;
+    position: relative;
+    animation: faceGuide 2s ease-in-out infinite;
+  }
+  @keyframes faceGuide {
+    0%,100% { border-color: rgba(255,255,255,0.6); }
+    50% { border-color: rgba(230,0,0,0.9); }
+  }
+  .face-corners::before, .face-corners::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+  }
+  .scan-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    animation: scanLine 2s linear infinite;
+  }
+  @keyframes scanLine {
+    0% { top: 0; opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+  .camera-guide-text {
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 24px;
+    text-align: center;
+    max-width: 220px;
+    line-height: 1.5;
+  }
+  .camera-dots {
+    display: flex; gap: 6px; margin-top: 16px;
+  }
+  .camera-dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+  }
+  .camera-dots span.active { background: var(--red); animation: dotPulse 1s ease-in-out infinite; }
+  @keyframes dotPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.4); } }
+  .camera-actions {
+    padding: 0 20px 20px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .capture-btn {
+    width: 72px; height: 72px;
+    background: var(--white);
+    border: 4px solid var(--red);
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .capture-btn::after {
+    content: '';
+    width: 52px; height: 52px;
+    background: var(--red);
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+  .capture-btn:active::after { width: 44px; height: 44px; }
+
+  /* ===== FINGERPRINT SCREEN ===== */
+  .fp-hand-diagram {
+    margin: 0 20px;
+    background: var(--grey-bg);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .fp-hand-visual {
+    width: 200px; height: 200px;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .fp-progress-info {
+    text-align: center;
+  }
+  .fp-count {
+    font-size: 32px; font-weight: 700; color: var(--dark); letter-spacing: -1px;
+  }
+  .fp-count span { color: var(--red); }
+  .fp-count-lbl { font-size: 13px; color: var(--grey-mid); margin-top: 2px; }
+  .fp-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 20px;
+  }
+  .fp-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--grey-bg);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    border: 1.5px solid transparent;
+    transition: all 0.3s;
+  }
+  .fp-item.captured { background: var(--success-light); border-color: var(--success); }
+  .fp-item.active { background: var(--red-light); border-color: var(--red); animation: fpPulse 1s infinite; }
+  @keyframes fpPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(230,0,0,0.2); }
+    50% { box-shadow: 0 0 0 4px rgba(230,0,0,0.1); }
+  }
+  .fp-item-icon {
+    width: 32px; height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    background: var(--white);
+    flex-shrink: 0;
+  }
+  .fp-item.captured .fp-item-icon { background: var(--success); }
+  .fp-item.active .fp-item-icon { background: var(--red); }
+  .fp-item-icon .material-icons-round { font-size: 16px; color: var(--grey-mid); }
+  .fp-item.captured .fp-item-icon .material-icons-round { color: var(--white); }
+  .fp-item.active .fp-item-icon .material-icons-round { color: var(--white); }
+  .fp-item-name { font-size: 12px; font-weight: 600; color: var(--grey-dark); line-height: 1.3; }
+  .fp-item-status { font-size: 10px; color: var(--grey-light); margin-top: 1px; }
+  .fp-item.captured .fp-item-status { color: var(--success); }
+  .fp-item.active .fp-item-status { color: var(--red); font-weight: 600; }
+
+  /* Fingerprint scanner animation */
+  .fp-scanner {
+    width: 120px; height: 120px;
+    background: var(--dark);
+    border-radius: var(--radius-lg);
+    margin: 0 auto 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fp-scanner-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    animation: fpScan 1.5s linear infinite;
+  }
+  @keyframes fpScan {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+  .fp-scanner svg { width: 60px; height: 60px; opacity: 0.4; }
+  .fp-scanner.active svg { opacity: 0.8; }
+
+  /* ===== NIBSS SUBMIT ===== */
+  .nibss-steps {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .nibss-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--grey-bg);
+    border-radius: var(--radius-md);
+    border: 1.5px solid transparent;
+    transition: all 0.4s;
+  }
+  .nibss-step.done {
+    background: var(--success-light);
+    border-color: var(--success);
+  }
+  .nibss-step.active {
+    background: var(--red-light);
+    border-color: var(--red);
+  }
+  .nibss-step-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.4s;
+  }
+  .nibss-step.done .nibss-step-icon { background: var(--success); }
+  .nibss-step.active .nibss-step-icon { background: var(--red); }
+  .nibss-step-icon .material-icons-round { font-size: 20px; color: var(--grey-light); }
+  .nibss-step.done .nibss-step-icon .material-icons-round { color: #fff; }
+  .nibss-step.active .nibss-step-icon .material-icons-round { color: #fff; }
+  .nibss-step-text { flex: 1; }
+  .nibss-step-name { font-size: 14px; font-weight: 600; color: var(--dark); }
+  .nibss-step-status { font-size: 12px; color: var(--grey-light); margin-top: 2px; }
+  .nibss-step.done .nibss-step-status { color: var(--success); }
+  .nibss-step.active .nibss-step-status { color: var(--red); }
+  .nibss-spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(230,0,0,0.2);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== SUCCESS / REFERENCE CODE ===== */
+  .success-hero {
+    background: linear-gradient(135deg, #003300 0%, #00A854 100%);
+    margin: 20px;
+    border-radius: var(--radius-xl);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .success-hero::after {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .success-checkmark {
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .success-checkmark .material-icons-round { font-size: 32px; color: #fff; }
+  .success-hero-title { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+  .success-hero-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin-top: 6px; line-height: 1.5; }
+
+  .ref-card {
+    margin: 0 20px;
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .ref-card-header {
+    background: var(--grey-bg);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--grey-border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .ref-card-header-title { font-size: 11px; font-weight: 700; color: var(--grey-mid); letter-spacing: 0.8px; text-transform: uppercase; }
+  .ref-card-body { padding: 16px; }
+  .ref-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--grey-border);
+  }
+  .ref-row:last-child { border-bottom: none; }
+  .ref-label { font-size: 12px; color: var(--grey-light); font-weight: 500; }
+  .ref-value { font-size: 14px; color: var(--dark); font-weight: 600; text-align: right; max-width: 60%; }
+  .ref-code {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 0.5px;
+    background: var(--red-light);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+  }
+
+  .action-btns { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* ===== VERIFY BVN RESULT ===== */
+  .bvn-result-hero {
+    background: linear-gradient(135deg, #001A4D 0%, #0052CC 100%);
+    margin: 20px;
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bvn-number {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .bvn-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .bvn-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,168,84,0.3);
+    border: 1px solid rgba(0,168,84,0.5);
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7FFFC4;
+  }
+
+  /* ===== PENDING APPLICATIONS ===== */
+  .pending-list { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+  .pending-card {
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pending-card:active { border-color: var(--red); background: var(--red-light); }
+  .pending-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .pending-card-name { font-size: 15px; font-weight: 700; color: var(--dark); }
+  .status-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.3px;
+  }
+  .status-badge.ready { background: var(--success-light); color: var(--success); }
+  .status-badge.pending { background: #FFF8E1; color: #B45309; }
+  .status-badge.offline { background: var(--blue-light); color: var(--blue); }
+  .pending-card-ref { font-family: var(--mono); font-size: 12px; color: var(--grey-light); margin-bottom: 8px; }
+  .pending-card-actions { display: flex; gap: 8px; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 6px;
+    background: var(--grey-border);
+    border-radius: 100px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 100px;
+    transition: width 1s ease;
+  }
+  .progress-fill.success { background: var(--success); }
+  .sync-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+  .sync-step-label {
+    font-size: 10px;
+    color: var(--grey-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .sync-step-label.active { color: var(--red); }
+  .sync-step-label.done { color: var(--success); }
+
+  /* ===== REPORTS ===== */
+  .reports-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 20px 20px; }
+  .report-card {
+    background: var(--white);
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-lg);
+    padding: 20px 16px;
+  }
+  .report-card-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .report-card-val { font-size: 28px; font-weight: 700; color: var(--dark); letter-spacing: -1px; }
+  .report-card-lbl { font-size: 12px; color: var(--grey-mid); margin-top: 2px; font-weight: 500; line-height: 1.3; }
+  .report-card-trend {
+    display: flex; align-items: center; gap: 4px;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--success);
+  }
+  .report-card-trend .material-icons-round { font-size: 14px; }
+
+  .chart-placeholder {
+    margin: 0 20px 20px;
+    background: var(--grey-bg);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: 1.5px solid var(--grey-border);
+  }
+  .chart-title { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 16px; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 80px; }
+  .chart-bar {
+    flex: 1;
+    background: var(--red);
+    border-radius: 4px 4px 0 0;
+    opacity: 0.85;
+    transition: height 0.5s ease;
+    min-height: 4px;
+  }
+  .chart-bar:nth-child(odd) { opacity: 0.5; }
+  .chart-labels { display: flex; gap: 8px; margin-top: 8px; }
+  .chart-label { flex: 1; font-size: 10px; color: var(--grey-light); text-align: center; font-weight: 500; }
+
+  /* ===== LOADING OVERLAY ===== */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    backdrop-filter: blur(4px);
+  }
+  .overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+  .overlay-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    width: 280px;
+    text-align: center;
+  }
+  .big-spinner {
+    width: 56px; height: 56px;
+    border: 4px solid rgba(230,0,0,0.1);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  .overlay-title { font-size: 16px; font-weight: 700; color: var(--dark); }
+  .overlay-sub { font-size: 13px; color: var(--grey-mid); margin-top: 6px; }
+
+  /* ===== MISC UTILITIES ===== */
+  .divider { height: 1px; background: var(--grey-border); margin: 0 20px; }
+  .spacer { height: 16px; }
+  .spacer-sm { height: 8px; }
+  .spacer-lg { height: 32px; }
+  .text-center { text-align: center; }
+  .text-red { color: var(--red); }
+  .font-mono { font-family: var(--mono); }
+
+  .info-strip {
+    margin: 0 20px;
+    padding: 12px 14px;
+    background: var(--blue-light);
+    border-radius: var(--radius-md);
+    display: flex; gap: 10px; align-items: flex-start;
+    border: 1px solid rgba(0,82,204,0.2);
+  }
+  .info-strip .material-icons-round { font-size: 16px; color: var(--blue); flex-shrink: 0; margin-top: 1px; }
+  .info-strip p { font-size: 13px; color: var(--blue); line-height: 1.5; }
+
+  /* ===== ACCOUNT CREATION REVIEW ===== */
+  .review-section {
+    margin: 0 20px;
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .review-header {
+    background: var(--grey-bg);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--grey-border);
+  }
+  .review-header-title { font-size: 11px; font-weight: 700; color: var(--grey-mid); letter-spacing: 0.8px; text-transform: uppercase; }
+  .review-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--grey-border);
+  }
+  .review-row:last-child { border-bottom: none; }
+  .review-label { font-size: 13px; color: var(--grey-mid); }
+  .review-value { font-size: 14px; color: var(--dark); font-weight: 600; text-align: right; }
+
+  /* Account success */
+  .acct-success-card {
+    margin: 0 20px;
+    border: 1.5px solid var(--grey-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+  .acct-success-top {
+    background: linear-gradient(135deg, #0A0A0A 0%, #E60000 100%);
+    padding: 28px 20px;
+    text-align: center;
+  }
+  .acct-number {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 2px;
+    margin-top: 8px;
+  }
+  .acct-type-badge {
+    display: inline-flex;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Responsive */
+  @media (min-width: 480px) {
+    #app { border-radius: 0; box-shadow: none; }
+  }
+
+  /* Sync animation */
+  @keyframes syncProgress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+  .syncing .progress-fill { animation: syncProgress 3s ease forwards; }
+  .synced .progress-fill { width: 100%; background: var(--success); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============================================================
+       BOTTOM NAV (hidden on login)
+  ============================================================ -->
+  <nav class="bottom-nav" id="bottom-nav" style="display:none;">
+    <button class="nav-item active" id="nav-home" onclick="navTo('dashboard')">
+      <span class="material-icons-round">grid_view</span>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" id="nav-pending" onclick="navTo('pending')">
+      <span class="material-icons-round">pending_actions</span>
+      <span class="nav-label">Pending</span>
+    </button>
+    <button class="nav-item" id="nav-reports" onclick="navTo('reports')">
+      <span class="material-icons-round">bar_chart</span>
+      <span class="nav-label">Reports</span>
+    </button>
+    <button class="nav-item" id="nav-logout" onclick="doLogout()">
+      <span class="material-icons-round">logout</span>
+      <span class="nav-label">Logout</span>
+    </button>
+  </nav>
+
+  <!-- ============================================================
+       SCREEN: LOGIN
+  ============================================================ -->
+  <div id="screen-login" class="screen active">
+    <div class="screen-content no-nav" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(160deg,#1A1A1A 0%,#2D0000 60%,#E60000 100%);padding:24px;">
+      <div class="login-wrap">
+        <div class="login-logo-area">
+          <div class="login-logo">
+            <svg viewBox="0 0 44 44" fill="none">
+              <rect width="44" height="44" rx="10" fill="none"/>
+              <text x="4" y="34" font-family="DM Sans,sans-serif" font-size="24" font-weight="900" fill="#fff">UBA</text>
+            </svg>
+          </div>
+          <div class="login-title">UBA Field BVN<br>Enrollment System</div>
+          <div class="login-subtitle">Field Agent Portal — Secure Access</div>
+          <div class="agent-badge">Agent Mode Active</div>
+        </div>
+        <div class="login-card">
+          <div class="form-group">
+            <label class="form-label">Staff ID</label>
+            <div class="input-icon-wrap">
+              <span class="material-icons-round">badge</span>
+              <input class="form-input" type="text" placeholder="e.g. UBA-2024-01234" id="login-staffid" value="UBA-2026-08847">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-icon-wrap">
+              <span class="material-icons-round">lock</span>
+              <input class="form-input" type="password" placeholder="Enter your password" id="login-pass" value="••••••••">
+            </div>
+          </div>
+          <button class="btn-primary mt" onclick="doLogin()">
+            <span class="material-icons-round" style="font-size:18px;">login</span>
+            Login to System
+          </button>
+        </div>
+        <div class="login-footer">
+          <p class="help">Having trouble? Contact IT Support: 0800-UBA-HELP</p>
+          <div class="login-sec">
+            <span class="material-icons-round">shield</span>
+            <p>Session encrypted with AES-256 · NDPR Compliant</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: DASHBOARD
+  ============================================================ -->
+  <div id="screen-dashboard" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div class="header-logo">
+          <svg viewBox="0 0 22 22" fill="none"><text x="1" y="17" font-family="DM Sans,sans-serif" font-size="11" font-weight="900" fill="#fff">UBA</text></svg>
+        </div>
+        <div>
+          <div class="header-title">BVN Enrollment</div>
+          <div class="header-subtitle">Field Agent System</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" style="position:relative;" onclick="alert('2 notifications pending')">
+          <span class="material-icons-round">notifications_none</span>
+          <div class="notif-dot"></div>
+        </button>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="dash-hero">
+        <div class="dash-greeting">Good morning 👋</div>
+        <div class="dash-name">Adewale Okonkwo</div>
+        <div class="dash-id">ID: UBA-2026-08847 · Lagos Island Branch</div>
+        <div class="dash-stats-row">
+          <div class="dash-stat">
+            <div class="dash-stat-val">14</div>
+            <div class="dash-stat-lbl">Today's Enroll.</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-val">3</div>
+            <div class="dash-stat-lbl">Pending Sync</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-val">97%</div>
+            <div class="dash-stat-lbl">Success Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notif-strip" style="margin-top:20px;">
+        <span class="material-icons-round">info</span>
+        <p><strong>2 BVNs ready:</strong> Customers are now eligible for account creation.</p>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Main Workflows</div>
+      </div>
+
+      <div class="workflow-cards">
+        <div class="wf-card" onclick="goToEnrollment()">
+          <div class="wf-icon red">
+            <span class="material-icons-round">person_add</span>
+          </div>
+          <div class="wf-info">
+            <div class="wf-title">New Customer Enrollment</div>
+            <div class="wf-desc">Capture biometrics & submit to NIBSS</div>
+          </div>
+        </div>
+        <div class="wf-card" onclick="goToVerify()">
+          <div class="wf-icon blue">
+            <span class="material-icons-round">verified_user</span>
+          </div>
+          <div class="wf-info">
+            <div class="wf-title">Verify Existing BVN</div>
+            <div class="wf-desc">Biometric identity verification</div>
+          </div>
+        </div>
+        <div class="wf-card" onclick="navTo('pending')">
+          <div class="wf-icon green">
+            <span class="material-icons-round">pending_actions</span>
+          </div>
+          <div class="wf-info">
+            <div class="wf-title">Continue Pending Applications</div>
+            <div class="wf-desc">BVN-ready & offline records</div>
+          </div>
+          <div class="wf-badge">3</div>
+        </div>
+        <div class="wf-card" onclick="navTo('reports')">
+          <div class="wf-icon grey">
+            <span class="material-icons-round">bar_chart</span>
+          </div>
+          <div class="wf-info">
+            <div class="wf-title">Reports & Analytics</div>
+            <div class="wf-desc">Daily stats and enrollment data</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top:8px;">
+        <div class="section-title">Recent Activity</div>
+      </div>
+      <div style="padding:0 20px 20px;">
+        <div id="recent-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ENROLLMENT STEP 1 – CUSTOMER INFO
+  ============================================================ -->
+  <div id="screen-enroll-info" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="back-btn" onclick="showScreen('dashboard')">
+          <span class="material-icons-round">arrow_back</span>
+        </button>
+        <div>
+          <div class="header-title">New Enrollment</div>
+          <div class="header-subtitle">Customer Information</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <!-- Step bar -->
+      <div class="step-bar">
+        <div class="step-dot active">1</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">2</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">3</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">4</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">5</div>
+      </div>
+      <div class="step-label-row">
+        <div class="step-label active">Info</div>
+        <div class="step-label">Face</div>
+        <div class="step-label">Fingers</div>
+        <div class="step-label">Submit</div>
+        <div class="step-label">Done</div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Personal Details</div>
+        <div class="form-group">
+          <label class="form-label-light">Full Name <span style="color:var(--red)">*</span></label>
+          <input class="form-input-light" type="text" placeholder="As on National ID" id="e-name">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label-light">Date of Birth</label>
+            <input class="form-input-light" type="date" id="e-dob">
+          </div>
+          <div class="form-group">
+            <label class="form-label-light">Gender</label>
+            <div class="select-wrap">
+              <select class="form-select" id="e-gender">
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">Phone Number</label>
+          <input class="form-input-light" type="tel" placeholder="080XXXXXXXX" id="e-phone">
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">Email Address</label>
+          <input class="form-input-light" type="email" placeholder="customer@email.com" id="e-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">Residential Address</label>
+          <input class="form-input-light" type="text" placeholder="Street, City, State" id="e-address">
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">National ID Type</label>
+          <div class="select-wrap">
+            <select class="form-select" id="e-idtype">
+              <option value="">Select ID Type</option>
+              <option>NIN (National Identity Number)</option>
+              <option>Voter's Card</option>
+              <option>International Passport</option>
+              <option>Driver's Licence</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">ID Number</label>
+          <input class="form-input-light" type="text" placeholder="Enter ID number" id="e-idnum">
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn-primary" onclick="goToFaceCapture()">
+          <span>Next — Face Capture</span>
+          <span class="material-icons-round" style="font-size:18px;">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ENROLLMENT STEP 2 – FACE CAPTURE
+  ============================================================ -->
+  <div id="screen-enroll-face" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="back-btn" onclick="showScreen('enroll-info')">
+          <span class="material-icons-round">arrow_back</span>
+        </button>
+        <div>
+          <div class="header-title">Face Capture</div>
+          <div class="header-subtitle">Step 2 of 5</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="step-bar">
+        <div class="step-dot done"><span class="material-icons-round" style="font-size:14px;">check</span></div>
+        <div class="step-line done"></div>
+        <div class="step-dot active">2</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">3</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">4</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">5</div>
+      </div>
+      <div class="step-label-row">
+        <div class="step-label done">Info</div>
+        <div class="step-label active">Face</div>
+        <div class="step-label">Fingers</div>
+        <div class="step-label">Submit</div>
+        <div class="step-label">Done</div>
+      </div>
+
+      <div class="camera-frame" id="face-camera-frame">
+        <div class="camera-overlay" id="face-camera-overlay">
+          <div class="face-guide">
+            <div class="scan-line"></div>
+          </div>
+          <div class="camera-guide-text">Position customer's face within the oval frame</div>
+          <div class="camera-dots">
+            <span class="active"></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <!-- Success state (hidden initially) -->
+        <div id="face-success-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,168,84,0.9);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+          <span class="material-icons-round" style="font-size:64px;color:#fff;">check_circle</span>
+          <span style="color:#fff;font-size:18px;font-weight:700;">Face Captured</span>
+        </div>
+      </div>
+
+      <div class="camera-actions">
+        <div class="capture-btn" id="face-capture-btn" onclick="captureFace()"></div>
+        <div class="info-strip" style="margin:0;">
+          <span class="material-icons-round">tips_and_updates</span>
+          <p>Ensure good lighting. Remove glasses or hats for accurate capture.</p>
+        </div>
+        <button class="btn-primary" id="face-next-btn" style="display:none;" onclick="goToFingerprint()">
+          <span>Next — Fingerprint Capture</span>
+          <span class="material-icons-round" style="font-size:18px;">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ENROLLMENT STEP 3 – FINGERPRINT CAPTURE
+  ============================================================ -->
+  <div id="screen-enroll-fp" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="back-btn" onclick="showScreen('enroll-face')">
+          <span class="material-icons-round">arrow_back</span>
+        </button>
+        <div>
+          <div class="header-title">Fingerprint Capture</div>
+          <div class="header-subtitle">Step 3 of 5</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="step-bar">
+        <div class="step-dot done"><span class="material-icons-round" style="font-size:14px;">check</span></div>
+        <div class="step-line done"></div>
+        <div class="step-dot done"><span class="material-icons-round" style="font-size:14px;">check</span></div>
+        <div class="step-line done"></div>
+        <div class="step-dot active">3</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">4</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">5</div>
+      </div>
+      <div class="step-label-row">
+        <div class="step-label done">Info</div>
+        <div class="step-label done">Face</div>
+        <div class="step-label active">Fingers</div>
+        <div class="step-label">Submit</div>
+        <div class="step-label">Done</div>
+      </div>
+
+      <div class="fp-hand-diagram">
+        <div class="fp-count"><span id="fp-captured-count">0</span> / 10</div>
+        <div class="fp-count-lbl">fingerprints captured</div>
+        <div style="margin-top:12px;">
+          <div class="fp-scanner" id="fp-scanner">
+            <div class="fp-scanner-line"></div>
+            <svg viewBox="0 0 60 60" fill="none">
+              <ellipse cx="30" cy="15" rx="8" ry="10" stroke="white" stroke-width="1.5"/>
+              <path d="M22 25 C18 30 16 38 18 46" stroke="white" stroke-width="1.5"/>
+              <path d="M38 25 C42 30 44 38 42 46" stroke="white" stroke-width="1.5"/>
+              <path d="M24 27 C21 32 20 40 22 48" stroke="white" stroke-width="1.5"/>
+              <path d="M36 27 C39 32 40 40 38 48" stroke="white" stroke-width="1.5"/>
+              <path d="M27 28 C25 33 25 42 27 50" stroke="white" stroke-width="1.5"/>
+              <path d="M33 28 C35 33 35 42 33 50" stroke="white" stroke-width="1.5"/>
+              <path d="M30 28 V52" stroke="white" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div id="fp-active-name" style="text-align:center;font-size:15px;font-weight:700;color:var(--dark);margin-top:12px;">Place Left Index Finger</div>
+          <div id="fp-active-sub" style="text-align:center;font-size:12px;color:var(--grey-mid);margin-top:4px;">Press firmly on the scanner</div>
+        </div>
+      </div>
+
+      <div class="fp-list" id="fp-list"></div>
+
+      <div style="padding:0 20px 20px;">
+        <button class="btn-primary" id="fp-capture-btn" onclick="captureFingerprint()">
+          <span class="material-icons-round" style="font-size:18px;">fingerprint</span>
+          <span id="fp-capture-label">Capture Fingerprint</span>
+        </button>
+        <button class="btn-primary" id="fp-submit-btn" style="display:none;margin-top:10px;" onclick="goToNIBSS()">
+          <span class="material-icons-round" style="font-size:18px;">cloud_upload</span>
+          Submit to NIBSS
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ENROLLMENT STEP 4 – NIBSS SUBMIT
+  ============================================================ -->
+  <div id="screen-enroll-nibss" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div style="width:40px;"></div>
+        <div>
+          <div class="header-title">NIBSS Transmission</div>
+          <div class="header-subtitle">Step 4 of 5</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="width:80px;height:80px;background:var(--red-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <span class="material-icons-round" style="font-size:36px;color:var(--red);" id="nibss-main-icon">cloud_upload</span>
+        </div>
+        <div style="font-size:18px;font-weight:700;color:var(--dark);">Submitting to NIBSS</div>
+        <div style="font-size:13px;color:var(--grey-mid);margin-top:6px;">Please keep the device connected</div>
+      </div>
+
+      <div class="nibss-steps" style="width:100%;max-width:400px;margin:0;">
+        <div class="nibss-step" id="nibss-s1">
+          <div class="nibss-step-icon"><span class="material-icons-round">inventory_2</span></div>
+          <div class="nibss-step-text">
+            <div class="nibss-step-name">Packaging customer information</div>
+            <div class="nibss-step-status" id="nibss-s1-status">Waiting...</div>
+          </div>
+          <div class="nibss-spinner" id="nibss-sp1" style="display:none;"></div>
+        </div>
+        <div class="nibss-step" id="nibss-s2">
+          <div class="nibss-step-icon"><span class="material-icons-round">face</span></div>
+          <div class="nibss-step-text">
+            <div class="nibss-step-name">Uploading facial biometric</div>
+            <div class="nibss-step-status" id="nibss-s2-status">Waiting...</div>
+          </div>
+          <div class="nibss-spinner" id="nibss-sp2" style="display:none;"></div>
+        </div>
+        <div class="nibss-step" id="nibss-s3">
+          <div class="nibss-step-icon"><span class="material-icons-round">fingerprint</span></div>
+          <div class="nibss-step-text">
+            <div class="nibss-step-name">Uploading fingerprints</div>
+            <div class="nibss-step-status" id="nibss-s3-status">Waiting...</div>
+          </div>
+          <div class="nibss-spinner" id="nibss-sp3" style="display:none;"></div>
+        </div>
+        <div class="nibss-step" id="nibss-s4">
+          <div class="nibss-step-icon"><span class="material-icons-round">send</span></div>
+          <div class="nibss-step-text">
+            <div class="nibss-step-name">Transmitting to NIBSS</div>
+            <div class="nibss-step-status" id="nibss-s4-status">Waiting...</div>
+          </div>
+          <div class="nibss-spinner" id="nibss-sp4" style="display:none;"></div>
+        </div>
+        <div class="nibss-step" id="nibss-s5">
+          <div class="nibss-step-icon"><span class="material-icons-round">qr_code</span></div>
+          <div class="nibss-step-text">
+            <div class="nibss-step-name">Generating reference code</div>
+            <div class="nibss-step-status" id="nibss-s5-status">Waiting...</div>
+          </div>
+          <div class="nibss-spinner" id="nibss-sp5" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ENROLLMENT STEP 5 – REFERENCE CODE
+  ============================================================ -->
+  <div id="screen-enroll-done" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div style="width:40px;"></div>
+        <div>
+          <div class="header-title">Enrollment Complete</div>
+          <div class="header-subtitle">Step 5 of 5</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="success-hero" style="margin-top:20px;">
+        <div class="success-checkmark">
+          <span class="material-icons-round">check</span>
+        </div>
+        <div class="success-hero-title">BVN Request Submitted</div>
+        <div class="success-hero-sub">BVN request successfully submitted.<br>BVN will be ready in 2 business days.</div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="ref-card">
+        <div class="ref-card-header">
+          <div class="ref-card-header-title">Enrollment Receipt</div>
+          <span class="material-icons-round" style="font-size:16px;color:var(--grey-light);">receipt_long</span>
+        </div>
+        <div class="ref-card-body">
+          <div class="ref-row">
+            <div class="ref-label">Customer Name</div>
+            <div class="ref-value" id="done-name">—</div>
+          </div>
+          <div class="ref-row">
+            <div class="ref-label">Reference Code</div>
+            <div class="ref-code" id="done-ref">—</div>
+          </div>
+          <div class="ref-row">
+            <div class="ref-label">Submitted At</div>
+            <div class="ref-value" id="done-time">—</div>
+          </div>
+          <div class="ref-row">
+            <div class="ref-label">Agent ID</div>
+            <div class="ref-value font-mono">UBA-2026-08847</div>
+          </div>
+          <div class="ref-row">
+            <div class="ref-label">Status</div>
+            <div class="status-badge ready">Submitted</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-btns">
+        <button class="btn-primary" onclick="saveRef()">
+          <span class="material-icons-round" style="font-size:18px;">save</span>
+          Save Reference Code
+        </button>
+        <button class="btn-outline" onclick="printRef()">
+          <span class="material-icons-round" style="font-size:18px;">print</span>
+          Print Reference Code
+        </button>
+        <button class="btn-ghost" style="width:100%;justify-content:center;" onclick="navTo('dashboard')">
+          <span class="material-icons-round" style="font-size:18px;">home</span>
+          Return to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: VERIFY BVN – STEP 1 FACE
+  ============================================================ -->
+  <div id="screen-verify-face" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="back-btn" onclick="showScreen('dashboard')">
+          <span class="material-icons-round">arrow_back</span>
+        </button>
+        <div>
+          <div class="header-title">Verify BVN</div>
+          <div class="header-subtitle">Step 1 — Face Capture</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="step-bar">
+        <div class="step-dot active">1</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">2</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">3</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">4</div>
+      </div>
+      <div class="step-label-row">
+        <div class="step-label active">Face</div>
+        <div class="step-label">Finger</div>
+        <div class="step-label">Verify</div>
+        <div class="step-label">Result</div>
+      </div>
+
+      <div class="camera-frame" id="v-face-frame">
+        <div class="camera-overlay" id="v-face-overlay">
+          <div class="face-guide">
+            <div class="scan-line"></div>
+          </div>
+          <div class="camera-guide-text">Position customer's face within the oval frame</div>
+          <div class="camera-dots">
+            <span class="active"></span><span></span><span></span>
+          </div>
+        </div>
+        <div id="v-face-success" style="display:none;position:absolute;inset:0;background:rgba(0,168,84,0.9);align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+          <span class="material-icons-round" style="font-size:64px;color:#fff;">check_circle</span>
+          <span style="color:#fff;font-size:18px;font-weight:700;">Face Captured</span>
+        </div>
+      </div>
+
+      <div class="camera-actions">
+        <div class="capture-btn" id="v-face-btn" onclick="captureVerifyFace()"></div>
+        <button class="btn-primary" id="v-face-next-btn" style="display:none;" onclick="goToVerifyFP()">
+          <span>Next — Fingerprint Verification</span>
+          <span class="material-icons-round" style="font-size:18px;">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: VERIFY BVN – STEP 2 FINGERPRINT
+  ============================================================ -->
+  <div id="screen-verify-fp" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="back-btn" onclick="showScreen('verify-face')">
+          <span class="material-icons-round">arrow_back</span>
+        </button>
+        <div>
+          <div class="header-title">Verify BVN</div>
+          <div class="header-subtitle">Step 2 — Fingerprint</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="step-bar">
+        <div class="step-dot done"><span class="material-icons-round" style="font-size:14px;">check</span></div>
+        <div class="step-line done"></div>
+        <div class="step-dot active">2</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">3</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">4</div>
+      </div>
+      <div class="step-label-row">
+        <div class="step-label done">Face</div>
+        <div class="step-label active">Finger</div>
+        <div class="step-label">Verify</div>
+        <div class="step-label">Result</div>
+      </div>
+
+      <div style="padding:20px;">
+        <div class="info-strip" style="margin:0 0 20px 0;">
+          <span class="material-icons-round">info</span>
+          <p>Optional: Ask customer to place one finger on the scanner to strengthen identity verification.</p>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:14px;">Select a finger to verify:</div>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="vfp-options">
+          <div class="fp-item" style="cursor:pointer;" onclick="selectVerifyFinger(this,'Left Thumb')">
+            <div class="fp-item-icon"><span class="material-icons-round">fingerprint</span></div>
+            <div class="fp-item-name">Left Thumb</div>
+          </div>
+          <div class="fp-item" style="cursor:pointer;" onclick="selectVerifyFinger(this,'Left Index')">
+            <div class="fp-item-icon"><span class="material-icons-round">fingerprint</span></div>
+            <div class="fp-item-name">Left Index</div>
+          </div>
+          <div class="fp-item" style="cursor:pointer;" onclick="selectVerifyFinger(this,'Right Index')">
+            <div class="fp-item-icon"><span class="material-icons-round">fingerprint</span></div>
+            <div class="fp-item-name">Right Index</div>
+          </div>
+          <div class="fp-item" style="cursor:pointer;" onclick="selectVerifyFinger(this,'Right Thumb')">
+            <div class="fp-item-icon"><span class="material-icons-round">fingerprint</span></div>
+            <div class="fp-item-name">Right Thumb</div>
+          </div>
+          <div class="fp-item" style="cursor:pointer;" onclick="selectVerifyFinger(this,'Right Middle')">
+            <div class="fp-item-icon"><span class="material-icons-round">fingerprint</span></div>
+            <div class="fp-item-name">Right Middle</div>
+          </div>
+        </div>
+
+        <div id="vfp-scanner-wrap" style="display:none;margin-top:20px;text-align:center;">
+          <div class="fp-scanner active" style="margin:0 auto;">
+            <div class="fp-scanner-line"></div>
+            <svg viewBox="0 0 60 60" fill="none">
+              <ellipse cx="30" cy="15" rx="8" ry="10" stroke="white" stroke-width="1.5"/>
+              <path d="M22 25 C18 30 16 38 18 46" stroke="white" stroke-width="1.5"/>
+              <path d="M38 25 C42 30 44 38 42 46" stroke="white" stroke-width="1.5"/>
+              <path d="M30 28 V52" stroke="white" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div id="vfp-scanning-text" style="margin-top:12px;font-size:14px;font-weight:600;color:var(--red);">Scanning...</div>
+        </div>
+
+        <button class="btn-primary" id="vfp-next-btn" style="margin-top:20px;display:none;" onclick="goToNIBSSVerify()">
+          <span>Submit for NIBSS Verification</span>
+          <span class="material-icons-round" style="font-size:18px;">arrow_forward</span>
+        </button>
+        <button class="btn-ghost" style="width:100%;justify-content:center;margin-top:8px;" onclick="goToNIBSSVerify()">
+          Skip fingerprint →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: VERIFY BVN – STEP 3 NIBSS VERIFY
+  ============================================================ -->
+  <div id="screen-verify-nibss" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div style="width:40px;"></div>
+        <div>
+          <div class="header-title">NIBSS Verification</div>
+          <div class="header-subtitle">Step 3 of 4</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;">
+      <div style="text-align:center;">
+        <div style="width:90px;height:90px;border:4px solid var(--blue-light);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 24px;"></div>
+        <div style="font-size:20px;font-weight:700;color:var(--dark);">Verifying Identity</div>
+        <div style="font-size:14px;color:var(--grey-mid);margin-top:8px;line-height:1.6;max-width:260px;">Verifying biometric identity with NIBSS…</div>
+        <div style="margin-top:24px;padding:16px;background:var(--grey-bg);border-radius:var(--radius-md);">
+          <div style="font-size:12px;color:var(--grey-light);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">NIBSS Live Check</div>
+          <div style="display:flex;flex-direction:column;gap:6px;" id="verify-steps-list">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--grey-mid);" id="vs1">
+              <span class="material-icons-round" style="font-size:16px;">hourglass_empty</span> Connecting to NIBSS servers
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--grey-mid);" id="vs2">
+              <span class="material-icons-round" style="font-size:16px;">hourglass_empty</span> Matching facial biometric
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--grey-mid);" id="vs3">
+              <span class="material-icons-round" style="font-size:16px;">hourglass_empty</span> Retrieving BVN record
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: VERIFY BVN – STEP 4 RESULT
+  ============================================================ -->
+  <div id="screen-verify-result" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div style="width:40px;"></div>
+        <div>
+          <div class="header-title">Verification Result</div>
+          <div class="header-subtitle">Step 4 of 4</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="bvn-result-hero" style="margin-top:20px;">
+        <div class="bvn-label">BVN Number</div>
+        <div class="bvn-number">2247 8831 4562</div>
+        <div class="bvn-verified-badge">
+          <span class="material-icons-round" style="font-size:14px;">verified</span>
+          Identity Verified
+        </div>
+        <div style="position:absolute;top:20px;right:20px;width:56px;height:56px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <span class="material-icons-round" style="font-size:28px;color:rgba(255,255,255,0.5);">shield</span>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="ref-card">
+        <div class="ref-card-header">
+          <div class="ref-card-header-title">Customer BVN Details</div>
+        </div>
+        <div class="ref-card-body">
+          <div class="ref-row">
+            <div class="ref-label">Full Name</div>
+            <div class="ref-value">Chukwuemeka Adeyemi</div>
+          </div>
+          <div class="ref-row">
+            <div class="ref-label">Date of Birth</div>
+            <div class="ref-value">12 March 1989</div>
+          </div>
+          <div class="ref-row">
+            <div class="ref-label">Phone Number</div>
+            <div class="ref-value">0803 456 7890</div>
+          </div>
+          <div class="ref-row">
+            <div class="ref-label">BVN Status</div>
+            <div class="status-badge ready">Active</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-btns">
+        <button class="btn-primary" onclick="goToAccountCreation('verify')">
+          <span class="material-icons-round" style="font-size:18px;">account_balance</span>
+          Proceed to Create Account
+        </button>
+        <button class="btn-ghost" style="width:100%;justify-content:center;" onclick="navTo('dashboard')">
+          Return to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: PENDING APPLICATIONS
+  ============================================================ -->
+  <div id="screen-pending" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div class="header-logo">
+          <svg viewBox="0 0 22 22" fill="none"><text x="1" y="17" font-family="DM Sans,sans-serif" font-size="11" font-weight="900" fill="#fff">UBA</text></svg>
+        </div>
+        <div>
+          <div class="header-title">Pending Applications</div>
+          <div class="header-subtitle">3 items require attention</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <!-- BVN Ready -->
+      <div class="section-header">
+        <div class="section-title">BVN Now Ready</div>
+        <div class="status-badge ready">2 Ready</div>
+      </div>
+
+      <div class="pending-list" style="margin-bottom:8px;">
+        <div class="pending-card">
+          <div class="pending-card-header">
+            <div class="pending-card-name">Funmilayo Adebayo</div>
+            <div class="status-badge ready">BVN Ready</div>
+          </div>
+          <div class="pending-card-ref">REF: NIBSS-2026-4421-B7K</div>
+          <div style="font-size:12px;color:var(--grey-light);margin-bottom:10px;">BVN: 2241 0034 9821 · Enrolled: 2 days ago</div>
+          <div class="pending-card-actions">
+            <button class="btn-sm" onclick="goToAccountCreation('pending1')">
+              <span class="material-icons-round" style="font-size:14px;">account_balance</span>
+              Create Account
+            </button>
+          </div>
+        </div>
+
+        <div class="pending-card">
+          <div class="pending-card-header">
+            <div class="pending-card-name">Babatunde Olatunji</div>
+            <div class="status-badge ready">BVN Ready</div>
+          </div>
+          <div class="pending-card-ref">REF: NIBSS-2026-3817-C2M</div>
+          <div style="font-size:12px;color:var(--grey-light);margin-bottom:10px;">BVN: 2253 8812 0045 · Enrolled: 1 day ago</div>
+          <div class="pending-card-actions">
+            <button class="btn-sm" onclick="goToAccountCreation('pending2')">
+              <span class="material-icons-round" style="font-size:14px;">account_balance</span>
+              Create Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Offline Applications -->
+      <div class="section-header" style="margin-top:12px;">
+        <div class="section-title">Offline Applications</div>
+        <div class="status-badge offline">1 Offline</div>
+      </div>
+
+      <div class="pending-list">
+        <div class="pending-card" id="offline-card">
+          <div class="pending-card-header">
+            <div class="pending-card-name">Ngozi Okafor</div>
+            <div class="status-badge offline" id="offline-status">Offline</div>
+          </div>
+          <div class="pending-card-ref">REF: LOCAL-2026-0091-X</div>
+          <div style="font-size:12px;color:var(--grey-light);margin-bottom:10px;">Captured: Today, 09:14 AM · Not synced</div>
+          <div id="offline-progress-wrap" style="display:none;margin-bottom:10px;">
+            <div class="sync-steps">
+              <span class="sync-step-label" id="sync-lbl-1">Encrypt</span>
+              <span class="sync-step-label" id="sync-lbl-2">Transmit</span>
+              <span class="sync-step-label" id="sync-lbl-3">Verify</span>
+              <span class="sync-step-label" id="sync-lbl-4">Complete</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="offline-progress" style="width:0%;"></div>
+            </div>
+          </div>
+          <div class="pending-card-actions" id="offline-actions">
+            <button class="btn-sm" onclick="syncOffline()">
+              <span class="material-icons-round" style="font-size:14px;">sync</span>
+              Sync
+            </button>
+          </div>
+          <div id="offline-synced-actions" style="display:none;margin-top:8px;">
+            <button class="btn-sm" onclick="goToAccountCreation('offline')">
+              <span class="material-icons-round" style="font-size:14px;">account_balance</span>
+              Create Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:20px;">
+        <button class="btn-outline" onclick="syncAll()">
+          <span class="material-icons-round" style="font-size:18px;">cloud_sync</span>
+          Sync All Offline Records
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ACCOUNT CREATION – STEP 1 SETUP
+  ============================================================ -->
+  <div id="screen-acct-setup" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="back-btn" id="acct-back-btn" onclick="acctGoBack()">
+          <span class="material-icons-round">arrow_back</span>
+        </button>
+        <div>
+          <div class="header-title">Create Account</div>
+          <div class="header-subtitle">Account Setup</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="step-bar">
+        <div class="step-dot active">1</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">2</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">3</div>
+      </div>
+      <div class="step-label-row">
+        <div class="step-label active">Setup</div>
+        <div class="step-label">Review</div>
+        <div class="step-label">Done</div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Account Details</div>
+        <div class="form-group">
+          <label class="form-label-light">BVN</label>
+          <input class="form-input-light" type="text" id="acct-bvn" readonly style="background:#F0F0F0;color:var(--grey-mid);">
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">Customer Name</label>
+          <input class="form-input-light" type="text" id="acct-name" readonly style="background:#F0F0F0;color:var(--grey-mid);">
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">Account Type <span style="color:var(--red)">*</span></label>
+          <div class="select-wrap">
+            <select class="form-select" id="acct-type">
+              <option value="">Select account type</option>
+              <option>Savings Account</option>
+              <option>Student Account</option>
+              <option>Salary Account</option>
+              <option>Free Bar Account</option>
+              <option>Current Account</option>
+              <option>Corporate Account</option>
+              <option>Premium Savings Account</option>
+              <option>Fixed Deposit Account</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">Initial Deposit (₦) <span style="color:var(--red)">*</span></label>
+          <div class="select-wrap">
+            <select class="form-select" id="acct-deposit">
+              <option value="">Select amount</option>
+              <option value="500">₦500</option>
+              <option value="1000">₦1,000</option>
+              <option value="2000">₦2,000</option>
+              <option value="5000">₦5,000</option>
+              <option value="10000">₦10,000</option>
+              <option value="10000+">₦10,000+</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-light">Branch <span style="color:var(--red)">*</span></label>
+          <div class="select-wrap">
+            <select class="form-select" id="acct-branch">
+              <option value="">Select branch</option>
+              <option>Lagos Island Branch</option>
+              <option>Victoria Island Branch</option>
+              <option>Ikeja Branch</option>
+              <option>Lekki Branch</option>
+              <option>Abuja Central Branch</option>
+              <option>Port Harcourt Branch</option>
+              <option>Kano Branch</option>
+              <option>Enugu Branch</option>
+              <option>Ibadan Branch</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn-primary" onclick="goToAcctReview()">
+          <span>Continue — Review Details</span>
+          <span class="material-icons-round" style="font-size:18px;">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ACCOUNT CREATION – STEP 2 REVIEW
+  ============================================================ -->
+  <div id="screen-acct-review" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="back-btn" onclick="showScreen('acct-setup')">
+          <span class="material-icons-round">arrow_back</span>
+        </button>
+        <div>
+          <div class="header-title">Review Details</div>
+          <div class="header-subtitle">Confirm before creating</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div class="step-bar">
+        <div class="step-dot done"><span class="material-icons-round" style="font-size:14px;">check</span></div>
+        <div class="step-line done"></div>
+        <div class="step-dot active">2</div>
+        <div class="step-line"></div>
+        <div class="step-dot pending">3</div>
+      </div>
+      <div class="step-label-row">
+        <div class="step-label done">Setup</div>
+        <div class="step-label active">Review</div>
+        <div class="step-label">Done</div>
+      </div>
+
+      <div style="padding:20px 20px 12px;">
+        <div class="info-strip" style="margin:0;">
+          <span class="material-icons-round">info</span>
+          <p>Please review all details carefully before creating the account.</p>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-header"><div class="review-header-title">Account Summary</div></div>
+        <div class="review-row">
+          <div class="review-label">Customer Name</div>
+          <div class="review-value" id="rev-name">—</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">BVN</div>
+          <div class="review-value font-mono" id="rev-bvn">—</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">Account Type</div>
+          <div class="review-value" id="rev-type">—</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">Initial Deposit</div>
+          <div class="review-value" id="rev-deposit">—</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">Branch</div>
+          <div class="review-value" id="rev-branch">—</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">Agent ID</div>
+          <div class="review-value font-mono">UBA-2026-08847</div>
+        </div>
+      </div>
+
+      <div class="action-btns">
+        <button class="btn-primary" onclick="processAccountCreation()">
+          <span class="material-icons-round" style="font-size:18px;">account_balance</span>
+          Create Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ACCOUNT CREATION – STEP 3 PROCESSING
+  ============================================================ -->
+  <div id="screen-acct-processing" class="screen">
+    <div class="screen-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;">
+      <div style="text-align:center;">
+        <div style="width:80px;height:80px;border:5px solid var(--red-light);border-top-color:var(--red);border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 24px;"></div>
+        <div style="font-size:20px;font-weight:700;color:var(--dark);">Creating Account</div>
+        <div style="font-size:14px;color:var(--grey-mid);margin-top:8px;">Creating customer account…</div>
+        <div style="font-size:12px;color:var(--grey-light);margin-top:4px;">Please do not close the application</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ACCOUNT CREATION – STEP 4 SUCCESS
+  ============================================================ -->
+  <div id="screen-acct-done" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div style="width:40px;"></div>
+        <div>
+          <div class="header-title">Account Created</div>
+          <div class="header-subtitle">Completed successfully</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div style="margin:20px 20px 16px;text-align:center;">
+        <div style="width:70px;height:70px;background:var(--success-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <span class="material-icons-round" style="font-size:34px;color:var(--success);">check_circle</span>
+        </div>
+        <div style="font-size:20px;font-weight:700;color:var(--dark);">Account Successfully Created</div>
+        <div style="font-size:13px;color:var(--grey-mid);margin-top:6px;">The customer's account has been opened</div>
+      </div>
+
+      <div class="acct-success-card">
+        <div class="acct-success-top">
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;">Account Number</div>
+          <div class="acct-number" id="acct-number-display">0023 4581 7734</div>
+          <div class="acct-type-badge" id="acct-type-display">Savings Account</div>
+        </div>
+        <div style="padding:16px;">
+          <div class="review-row" style="padding:10px 0;">
+            <div class="review-label">Customer Name</div>
+            <div class="review-value" id="acct-done-name">—</div>
+          </div>
+          <div class="review-row" style="padding:10px 0;">
+            <div class="review-label">Account Type</div>
+            <div class="review-value" id="acct-done-type">—</div>
+          </div>
+          <div class="review-row" style="padding:10px 0;">
+            <div class="review-label">Branch</div>
+            <div class="review-value" id="acct-done-branch">—</div>
+          </div>
+          <div class="review-row" style="padding:10px 0;border:none;">
+            <div class="review-label">Status</div>
+            <div class="status-badge ready">Active</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-btns">
+        <button class="btn-ghost" style="width:100%;justify-content:center;" onclick="navTo('dashboard')">
+          <span class="material-icons-round" style="font-size:18px;">home</span>
+          Return to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: REPORTS
+  ============================================================ -->
+  <div id="screen-reports" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div class="header-logo">
+          <svg viewBox="0 0 22 22" fill="none"><text x="1" y="17" font-family="DM Sans,sans-serif" font-size="11" font-weight="900" fill="#fff">UBA</text></svg>
+        </div>
+        <div>
+          <div class="header-title">Reports</div>
+          <div class="header-subtitle">Today's performance summary</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" onclick="alert('Exporting report...')">
+          <span class="material-icons-round">download</span>
+        </button>
+      </div>
+    </div>
+    <div class="screen-content">
+      <div style="padding:16px 20px 0;">
+        <div style="background:var(--grey-bg);border-radius:var(--radius-md);padding:2px;display:flex;gap:2px;" id="report-tabs">
+          <button style="flex:1;height:38px;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;background:var(--white);color:var(--dark);box-shadow:var(--shadow-sm);" onclick="setReportTab(this,'today')">Today</button>
+          <button style="flex:1;height:38px;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--grey-mid);" onclick="setReportTab(this,'week')">This Week</button>
+          <button style="flex:1;height:38px;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--grey-mid);" onclick="setReportTab(this,'month')">This Month</button>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">Key Metrics</div></div>
+      <div class="reports-grid">
+        <div class="report-card">
+          <div class="report-card-icon" style="background:var(--red-light);">
+            <span class="material-icons-round" style="color:var(--red);font-size:22px;">account_balance</span>
+          </div>
+          <div class="report-card-val" id="rep-acct">8</div>
+          <div class="report-card-lbl">Accounts Created Today</div>
+          <div class="report-card-trend">
+            <span class="material-icons-round">trending_up</span> +2 vs yesterday
+          </div>
+        </div>
+        <div class="report-card">
+          <div class="report-card-icon" style="background:var(--blue-light);">
+            <span class="material-icons-round" style="color:var(--blue);font-size:22px;">fingerprint</span>
+          </div>
+          <div class="report-card-val" id="rep-bvn">14</div>
+          <div class="report-card-lbl">BVNs Captured Today</div>
+          <div class="report-card-trend">
+            <span class="material-icons-round">trending_up</span> +5 vs yesterday
+          </div>
+        </div>
+        <div class="report-card">
+          <div class="report-card-icon" style="background:#FFF8E1;">
+            <span class="material-icons-round" style="color:#B45309;font-size:22px;">pending</span>
+          </div>
+          <div class="report-card-val" id="rep-pending">3</div>
+          <div class="report-card-lbl">Pending Enrollments</div>
+          <div class="report-card-trend" style="color:#B45309;">
+            <span class="material-icons-round">remove</span> No change
+          </div>
+        </div>
+        <div class="report-card">
+          <div class="report-card-icon" style="background:var(--success-light);">
+            <span class="material-icons-round" style="color:var(--success);font-size:22px;">cloud_done</span>
+          </div>
+          <div class="report-card-val" id="rep-sync">100%</div>
+          <div class="report-card-lbl">Offline Sync Status</div>
+          <div class="report-card-trend">
+            <span class="material-icons-round">check_circle</span> All synced
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-placeholder">
+        <div class="chart-title">Hourly Enrollments (Today)</div>
+        <div class="chart-bars">
+          <div class="chart-bar" style="height:30%;"></div>
+          <div class="chart-bar" style="height:50%;"></div>
+          <div class="chart-bar" style="height:70%;"></div>
+          <div class="chart-bar" style="height:90%;"></div>
+          <div class="chart-bar" style="height:60%;"></div>
+          <div class="chart-bar" style="height:80%;"></div>
+          <div class="chart-bar" style="height:45%;"></div>
+          <div class="chart-bar" style="height:30%;"></div>
+        </div>
+        <div class="chart-labels">
+          <div class="chart-label">8am</div>
+          <div class="chart-label">9am</div>
+          <div class="chart-label">10am</div>
+          <div class="chart-label">11am</div>
+          <div class="chart-label">12pm</div>
+          <div class="chart-label">1pm</div>
+          <div class="chart-label">2pm</div>
+          <div class="chart-label">Now</div>
+        </div>
+      </div>
+
+      <div style="padding:0 20px 20px;">
+        <div class="ref-card">
+          <div class="ref-card-header">
+            <div class="ref-card-header-title">Agent Summary</div>
+          </div>
+          <div class="ref-card-body">
+            <div class="ref-row">
+              <div class="ref-label">Agent Name</div>
+              <div class="ref-value">Adewale Okonkwo</div>
+            </div>
+            <div class="ref-row">
+              <div class="ref-label">Agent ID</div>
+              <div class="ref-value font-mono">UBA-2026-08847</div>
+            </div>
+            <div class="ref-row">
+              <div class="ref-label">Branch</div>
+              <div class="ref-value">Lagos Island</div>
+            </div>
+            <div class="ref-row">
+              <div class="ref-label">Success Rate</div>
+              <div class="ref-value" style="color:var(--success);">97.2%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       LOADING OVERLAY
+  ============================================================ -->
+  <div class="overlay" id="loading-overlay">
+    <div class="overlay-card">
+      <div class="big-spinner"></div>
+      <div class="overlay-title" id="overlay-title">Processing</div>
+      <div class="overlay-sub" id="overlay-sub">Please wait...</div>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+// ===========================
+// STATE
+// ===========================
+let currentScreen = 'login';
+let acctSource = 'verify';
+let fpCaptured = 0;
+let fpAutoTimer = null;
+
+const fingerprints = [
+  { name: 'Left Index', hand: 'Left' },
+  { name: 'Left Middle', hand: 'Left' },
+  { name: 'Left Ring', hand: 'Left' },
+  { name: 'Left Pinky', hand: 'Left' },
+  { name: 'Right Index', hand: 'Right' },
+  { name: 'Right Middle', hand: 'Right' },
+  { name: 'Right Ring', hand: 'Right' },
+  { name: 'Right Pinky', hand: 'Right' },
+  { name: 'Left Thumb', hand: 'Left' },
+  { name: 'Right Thumb', hand: 'Right' },
+];
+
+const acctData = {
+  bvn: '', name: '', type: '', deposit: '', branch: ''
+};
+
+// ===========================
+// SCREEN MANAGEMENT
+// ===========================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  currentScreen = id;
+
+  // Scroll to top
+  const sc = document.getElementById('screen-' + id).querySelector('.screen-content');
+  if (sc) sc.scrollTop = 0;
+
+  // Show/hide nav
+  const noNavScreens = ['login', 'acct-processing'];
+  const nav = document.getElementById('bottom-nav');
+  nav.style.display = noNavScreens.includes(id) ? 'none' : 'flex';
+
+  // Update active nav item
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  if (['dashboard'].includes(id)) document.getElementById('nav-home').classList.add('active');
+  if (['pending'].includes(id)) document.getElementById('nav-pending').classList.add('active');
+  if (['reports'].includes(id)) document.getElementById('nav-reports').classList.add('active');
+}
+
+function navTo(dest) {
+  showScreen(dest);
+}
+
+// ===========================
+// LOGIN
+// ===========================
+function doLogin() {
+  showLoading('Authenticating...', 'Verifying agent credentials');
+  setTimeout(() => {
+    hideLoading();
+    buildRecentActivity();
+    showScreen('dashboard');
+  }, 1800);
+}
+
+function doLogout() {
+  if (confirm('Log out of the system?')) {
+    showScreen('login');
+  }
+}
+
+// ===========================
+// DASHBOARD
+// ===========================
+function buildRecentActivity() {
+  const items = [
+    { name: 'Chidinma Eze', action: 'BVN Enrolled', time: '2 min ago', icon: 'person_add', color: 'red' },
+    { name: 'Emeka Obi', action: 'Account Created', time: '18 min ago', icon: 'account_balance', color: 'green' },
+    { name: 'Aisha Bello', action: 'BVN Verified', time: '45 min ago', icon: 'verified_user', color: 'blue' },
+  ];
+  const container = document.getElementById('recent-list');
+  container.innerHTML = items.map(i => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--grey-border);">
+      <div class="wf-icon ${i.color}" style="width:40px;height:40px;border-radius:var(--radius-sm);">
+        <span class="material-icons-round" style="font-size:18px;">${i.icon}</span>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:600;color:var(--dark);">${i.name}</div>
+        <div style="font-size:12px;color:var(--grey-mid);margin-top:1px;">${i.action}</div>
+      </div>
+      <div style="font-size:11px;color:var(--grey-light);font-weight:500;">${i.time}</div>
+    </div>
+  `).join('');
+}
+
+// ===========================
+// ENROLLMENT FLOW
+// ===========================
+function goToEnrollment() {
+  fpCaptured = 0;
+  // Pre-fill demo data
+  setTimeout(() => {
+    const n = document.getElementById('e-name');
+    if (n && !n.value) n.value = 'Adaeze Nwachukwu';
+    const p = document.getElementById('e-phone');
+    if (p && !p.value) p.value = '08056789012';
+    const dob = document.getElementById('e-dob');
+    if (dob && !dob.value) dob.value = '1995-07-22';
+    const g = document.getElementById('e-gender');
+    if (g && !g.value) g.value = 'Female';
+  }, 100);
+  showScreen('enroll-info');
+}
+
+function goToFaceCapture() {
+  // Reset face capture state
+  document.getElementById('face-success-overlay').style.display = 'none';
+  document.getElementById('face-capture-btn').style.display = 'block';
+  document.getElementById('face-next-btn').style.display = 'none';
+  document.getElementById('face-camera-overlay').style.display = 'flex';
+  showScreen('enroll-face');
+}
+
+let faceCaptured = false;
+function captureFace() {
+  if (faceCaptured) return;
+  const btn = document.getElementById('face-capture-btn');
+  btn.style.opacity = '0.5';
+  setTimeout(() => {
+    const overlay = document.getElementById('face-camera-overlay');
+    const success = document.getElementById('face-success-overlay');
+    overlay.style.display = 'none';
+    success.style.display = 'flex';
+    btn.style.display = 'none';
+    document.getElementById('face-next-btn').style.display = 'flex';
+    faceCaptured = true;
+  }, 1500);
+}
+
+function goToFingerprint() {
+  fpCaptured = 0;
+  faceCaptured = false;
+  buildFPList();
+  showScreen('enroll-fp');
+  document.getElementById('fp-capture-btn').style.display = 'flex';
+  document.getElementById('fp-submit-btn').style.display = 'none';
+  updateFPUI();
+}
+
+function buildFPList() {
+  const list = document.getElementById('fp-list');
+  list.innerHTML = fingerprints.map((f, i) => `
+    <div class="fp-item ${i === 0 ? 'active' : 'pending'}" id="fp-item-${i}">
+      <div class="fp-item-icon"><span class="material-icons-round">fingerprint</span></div>
+      <div>
+        <div class="fp-item-name">${f.name}</div>
+        <div class="fp-item-status" id="fp-status-${i}">${i === 0 ? 'Ready to scan' : 'Waiting'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateFPUI() {
+  if (fpCaptured >= fingerprints.length) return;
+  const fp = fingerprints[fpCaptured];
+  document.getElementById('fp-active-name').textContent = `Place ${fp.name} Finger`;
+  document.getElementById('fp-active-sub').textContent = 'Press firmly on the scanner';
+  document.getElementById('fp-captured-count').textContent = fpCaptured;
+  document.getElementById('fp-capture-label').textContent = `Capture ${fp.name}`;
+}
+
+function captureFingerprint() {
+  if (fpCaptured >= fingerprints.length) return;
+  const btn = document.getElementById('fp-capture-btn');
+  btn.style.opacity = '0.5';
+  btn.disabled = true;
+
+  // Show scanning animation
+  document.getElementById('fp-active-sub').textContent = 'Scanning...';
+  document.getElementById('fp-scanner').classList.add('active');
+
+  setTimeout(() => {
+    // Mark current as captured
+    const item = document.getElementById(`fp-item-${fpCaptured}`);
+    item.classList.remove('active');
+    item.classList.add('captured');
+    document.getElementById(`fp-status-${fpCaptured}`).textContent = 'Captured ✓';
+    item.querySelector('.fp-item-name').style.color = 'var(--success)';
+
+    fpCaptured++;
+    document.getElementById('fp-captured-count').textContent = fpCaptured;
+
+    if (fpCaptured < fingerprints.length) {
+      // Mark next as active
+      const nextItem = document.getElementById(`fp-item-${fpCaptured}`);
+      nextItem.classList.remove('pending');
+      nextItem.classList.add('active');
+      document.getElementById(`fp-status-${fpCaptured}`).textContent = 'Ready to scan';
+      updateFPUI();
+      btn.style.opacity = '1';
+      btn.disabled = false;
+    } else {
+      // All done
+      document.getElementById('fp-active-name').textContent = 'All Fingerprints Captured!';
+      document.getElementById('fp-active-sub').textContent = '10 / 10 complete';
+      btn.style.display = 'none';
+      document.getElementById('fp-submit-btn').style.display = 'flex';
+    }
+    document.getElementById('fp-scanner').classList.remove('active');
+  }, 900);
+}
+
+function goToNIBSS() {
+  showScreen('enroll-nibss');
+  runNIBSSSequence();
+}
+
+function runNIBSSSequence() {
+  const steps = [
+    { id: 1, msg: 'Packaging...', done: 'Packaged ✓' },
+    { id: 2, msg: 'Uploading...', done: 'Uploaded ✓' },
+    { id: 3, msg: 'Uploading...', done: 'Uploaded ✓' },
+    { id: 4, msg: 'Transmitting...', done: 'Transmitted ✓' },
+    { id: 5, msg: 'Generating...', done: 'Generated ✓' },
+  ];
+
+  let delay = 600;
+  steps.forEach((s, idx) => {
+    // Activate step
+    setTimeout(() => {
+      const el = document.getElementById(`nibss-s${s.id}`);
+      const sp = document.getElementById(`nibss-sp${s.id}`);
+      const st = document.getElementById(`nibss-s${s.id}-status`);
+      el.classList.add('active');
+      sp.style.display = 'block';
+      st.textContent = s.msg;
+    }, delay);
+
+    // Complete step
+    setTimeout(() => {
+      const el = document.getElementById(`nibss-s${s.id}`);
+      const sp = document.getElementById(`nibss-sp${s.id}`);
+      const st = document.getElementById(`nibss-s${s.id}-status`);
+      el.classList.remove('active');
+      el.classList.add('done');
+      sp.style.display = 'none';
+      st.textContent = s.done;
+    }, delay + 1200);
+
+    delay += 1500;
+  });
+
+  // Go to done screen
+  setTimeout(() => {
+    const name = document.getElementById('e-name').value || 'Adaeze Nwachukwu';
+    const refCode = 'NIBSS-2026-' + Math.floor(1000 + Math.random()*9000) + '-' + randomStr(3);
+    const now = new Date();
+    document.getElementById('done-name').textContent = name;
+    document.getElementById('done-ref').textContent = refCode;
+    document.getElementById('done-time').textContent = now.toLocaleString('en-NG', { dateStyle: 'medium', timeStyle: 'short' });
+    showScreen('enroll-done');
+  }, delay + 400);
+}
+
+function randomStr(n) {
+  return Math.random().toString(36).substring(2, 2+n).toUpperCase();
+}
+
+function saveRef() {
+  showLoading('Saving...', 'Saving reference code to device');
+  setTimeout(() => { hideLoading(); showToast('Reference code saved to system'); }, 1200);
+}
+
+function printRef() {
+  showLoading('Preparing...', 'Preparing print document');
+  setTimeout(() => { hideLoading(); showToast('Document sent to printer'); }, 1200);
+}
+
+// ===========================
+// VERIFY BVN FLOW
+// ===========================
+function goToVerify() {
+  let vfaceCaptured = false;
+  document.getElementById('v-face-success').style.display = 'none';
+  document.getElementById('v-face-btn').style.display = 'block';
+  document.getElementById('v-face-next-btn').style.display = 'none';
+  showScreen('verify-face');
+}
+
+function captureVerifyFace() {
+  const btn = document.getElementById('v-face-btn');
+  btn.style.opacity = '0.5';
+  setTimeout(() => {
+    document.getElementById('v-face-success').style.display = 'flex';
+    btn.style.display = 'none';
+    document.getElementById('v-face-next-btn').style.display = 'flex';
+  }, 1500);
+}
+
+function goToVerifyFP() {
+  showScreen('verify-fp');
+  document.getElementById('vfp-next-btn').style.display = 'none';
+  document.getElementById('vfp-scanner-wrap').style.display = 'none';
+  // Reset all finger items
+  document.querySelectorAll('#vfp-options .fp-item').forEach(i => {
+    i.classList.remove('active','captured');
+  });
+}
+
+function selectVerifyFinger(el, name) {
+  document.querySelectorAll('#vfp-options .fp-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  const wrap = document.getElementById('vfp-scanner-wrap');
+  wrap.style.display = 'block';
+  document.getElementById('vfp-scanning-text').textContent = `Scanning ${name}...`;
+
+  setTimeout(() => {
+    el.classList.remove('active');
+    el.classList.add('captured');
+    el.querySelector('.fp-item-icon').innerHTML = '<span class="material-icons-round">check</span>';
+    document.getElementById('vfp-scanning-text').textContent = `${name} — Verified ✓`;
+    document.getElementById('vfp-scanning-text').style.color = 'var(--success)';
+    document.getElementById('vfp-next-btn').style.display = 'flex';
+  }, 1800);
+}
+
+function goToNIBSSVerify() {
+  showScreen('verify-nibss');
+  runVerifySteps();
+}
+
+function runVerifySteps() {
+  const steps = [
+    { id: 'vs1', text: 'Connecting to NIBSS servers', icon: 'link' },
+    { id: 'vs2', text: 'Matching facial biometric', icon: 'face' },
+    { id: 'vs3', text: 'Retrieving BVN record', icon: 'folder_open' },
+  ];
+  steps.forEach((s, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(s.id);
+      el.innerHTML = `<span class="material-icons-round" style="font-size:16px;color:var(--red);">sync</span> ${s.text}`;
+      el.style.color = 'var(--red)';
+    }, 800 * i);
+    setTimeout(() => {
+      const el = document.getElementById(s.id);
+      el.innerHTML = `<span class="material-icons-round" style="font-size:16px;color:var(--success);">check_circle</span> ${s.text}`;
+      el.style.color = 'var(--success)';
+    }, 800 * i + 700);
+  });
+  setTimeout(() => {
+    showScreen('verify-result');
+  }, 800 * 3 + 600);
+}
+
+// ===========================
+// PENDING APPLICATIONS
+// ===========================
+let syncState = 0;
+
+function syncOffline() {
+  if (syncState > 0) return;
+  syncState = 1;
+  const actions = document.getElementById('offline-actions');
+  const progressWrap = document.getElementById('offline-progress-wrap');
+  const progress = document.getElementById('offline-progress');
+  const status = document.getElementById('offline-status');
+  const card = document.getElementById('offline-card');
+
+  actions.style.display = 'none';
+  progressWrap.style.display = 'block';
+  status.textContent = 'Syncing...';
+  status.className = 'status-badge pending';
+
+  const labels = ['sync-lbl-1','sync-lbl-2','sync-lbl-3','sync-lbl-4'];
+  const pcts = [20, 50, 80, 100];
+
+  labels.forEach((lbl, i) => {
+    setTimeout(() => {
+      // Set current active
+      labels.forEach((l, j) => {
+        const el = document.getElementById(l);
+        if (j < i) { el.className = 'sync-step-label done'; }
+        else if (j === i) { el.className = 'sync-step-label active'; }
+        else { el.className = 'sync-step-label'; }
+      });
+      progress.style.width = pcts[i] + '%';
+      if (i === labels.length - 1) {
+        progress.classList.add('success');
+        status.textContent = 'Synced';
+        status.className = 'status-badge ready';
+        document.getElementById('offline-synced-actions').style.display = 'block';
+        syncState = 2;
+      }
+    }, 700 * (i + 1));
+  });
+}
+
+function syncAll() {
+  syncOffline();
+  showToast('Syncing all offline records...');
+}
+
+// ===========================
+// ACCOUNT CREATION
+// ===========================
+function goToAccountCreation(source) {
+  acctSource = source;
+  let bvn = '', name = '', branch = 'Lagos Island Branch';
+
+  if (source === 'verify') {
+    bvn = '2247 8831 4562';
+    name = 'Chukwuemeka Adeyemi';
+  } else if (source === 'pending1') {
+    bvn = '2241 0034 9821';
+    name = 'Funmilayo Adebayo';
+  } else if (source === 'pending2') {
+    bvn = '2253 8812 0045';
+    name = 'Babatunde Olatunji';
+  } else if (source === 'offline') {
+    bvn = '2261 5510 3387';
+    name = 'Ngozi Okafor';
+  }
+
+  acctData.bvn = bvn;
+  acctData.name = name;
+
+  document.getElementById('acct-bvn').value = bvn;
+  document.getElementById('acct-name').value = name;
+  const branchSel = document.getElementById('acct-branch');
+  branchSel.value = branch;
+
+  showScreen('acct-setup');
+}
+
+function acctGoBack() {
+  if (acctSource === 'verify') showScreen('verify-result');
+  else showScreen('pending');
+}
+
+function goToAcctReview() {
+  const type = document.getElementById('acct-type').value || 'Savings Account';
+  const depositVal = document.getElementById('acct-deposit').value || '1000';
+  const branch = document.getElementById('acct-branch').value || 'Lagos Island Branch';
+
+  acctData.type = type;
+  acctData.deposit = depositVal.startsWith('₦') ? depositVal : '₦' + Number(depositVal).toLocaleString();
+  acctData.branch = branch;
+
+  document.getElementById('rev-name').textContent = acctData.name;
+  document.getElementById('rev-bvn').textContent = acctData.bvn;
+  document.getElementById('rev-type').textContent = type;
+  document.getElementById('rev-deposit').textContent = acctData.deposit;
+  document.getElementById('rev-branch').textContent = branch;
+
+  showScreen('acct-review');
+}
+
+function processAccountCreation() {
+  showScreen('acct-processing');
+  setTimeout(() => {
+    const acctNum = generateAcctNum();
+    document.getElementById('acct-number-display').textContent = acctNum;
+    document.getElementById('acct-type-display').textContent = acctData.type || 'Savings Account';
+    document.getElementById('acct-done-name').textContent = acctData.name;
+    document.getElementById('acct-done-type').textContent = acctData.type;
+    document.getElementById('acct-done-branch').textContent = acctData.branch;
+    showScreen('acct-done');
+  }, 2500);
+}
+
+function generateAcctNum() {
+  const p1 = String(Math.floor(1000 + Math.random() * 9000));
+  const p2 = String(Math.floor(1000 + Math.random() * 9000));
+  const p3 = String(Math.floor(1000 + Math.random() * 9000));
+  return `${p1} ${p2} ${p3}`;
+}
+
+// ===========================
+// REPORTS
+// ===========================
+function setReportTab(btn, tab) {
+  document.querySelectorAll('#report-tabs button').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.color = 'var(--grey-mid)';
+    b.style.boxShadow = 'none';
+  });
+  btn.style.background = 'var(--white)';
+  btn.style.color = 'var(--dark)';
+  btn.style.boxShadow = 'var(--shadow-sm)';
+
+  const data = {
+    today: { acct: 8, bvn: 14, pending: 3, sync: '100%' },
+    week: { acct: 47, bvn: 83, pending: 7, sync: '98%' },
+    month: { acct: 193, bvn: 341, pending: 12, sync: '99%' },
+  };
+  const d = data[tab];
+  document.getElementById('rep-acct').textContent = d.acct;
+  document.getElementById('rep-bvn').textContent = d.bvn;
+  document.getElementById('rep-pending').textContent = d.pending;
+  document.getElementById('rep-sync').textContent = d.sync;
+}
+
+// ===========================
+// LOADING HELPERS
+// ===========================
+function showLoading(title, sub) {
+  document.getElementById('overlay-title').textContent = title || 'Processing';
+  document.getElementById('overlay-sub').textContent = sub || 'Please wait...';
+  document.getElementById('loading-overlay').classList.add('show');
+}
+
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+// ===========================
+// TOAST
+// ===========================
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = `
+      position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+      background:#1A1A1A;color:#fff;padding:12px 20px;
+      border-radius:100px;font-family:var(--font);font-size:13px;font-weight:500;
+      z-index:300;white-space:nowrap;max-width:calc(100% - 40px);text-align:center;
+      box-shadow:0 4px 16px rgba(0,0,0,0.3);
+      animation:slideUp 0.3s ease;
+    `;
+    document.getElementById('app').appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+// ===========================
+// INIT
+// ===========================
+document.addEventListener('DOMContentLoaded', () => {
+  showScreen('login');
+});
+</script>
+</body>
+</html>
