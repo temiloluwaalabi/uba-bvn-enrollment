@@ -1381,7 +1381,7 @@
       </div>
 
       <!-- PIN Dots display -->
-      <div style="padding:36px 24px 0;display:flex;justify-content:center;gap:16px;" id="token-dots">
+      <div style="padding:36px 24px 0;display:flex;margin-bottom:10px;justify-content:center;gap:16px;" id="token-dots">
         <div class="token-dot" id="td-0"></div>
         <div class="token-dot" id="td-1"></div>
         <div class="token-dot" id="td-2"></div>
@@ -2687,7 +2687,7 @@ function showScreen(id) {
   if (sc) sc.scrollTop = 0;
 
   // Show/hide nav
-  const noNavScreens = ['login', 'acct-processing'];
+  const noNavScreens = ['login', 'acct-processing', 'token'];
   const nav = document.getElementById('bottom-nav');
   nav.style.display = noNavScreens.includes(id) ? 'none' : 'flex';
 
